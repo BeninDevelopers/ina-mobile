@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">EDelestage</string>
+    <string name="app_name">INA</string>
+    <string name="action_voice_rec">Rechercher...</string>
 </resources>
