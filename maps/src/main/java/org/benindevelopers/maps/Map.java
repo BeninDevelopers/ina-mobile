@@ -1,7 +1,7 @@
 package org.benindevelopers.maps;
 
 /**
- * Created by Ramadan SOUMAILA, , on 28/02/16.
+ * Created by Ramadan SOUMAILA, SALAMI Abdel-Faiçal , Tiburce, on 28/02/16.
  */
 
 import android.app.Activity;

@@ -20,6 +20,7 @@ public class SearchActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+        // affichage du dialog pour demander l'état du courant
         dyPower();
     }
 

@@ -22,10 +22,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.1.1'
     compile project(':webservices')
-    compile 'com.github.arimorty:floatingsearchview:1.1.2'
-    compile 'me.drakeet.materialdialog:library:1.2.2'
     compile project(':power')
     compile project(':maps')
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.github.arimorty:floatingsearchview:1.1.2'
+    compile 'me.drakeet.materialdialog:library:1.2.2'
+    compile 'com.android.support:support-v4:23.1.1'
 }

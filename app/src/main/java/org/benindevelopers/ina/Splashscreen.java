@@ -29,6 +29,9 @@ public class Splashscreen extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... params) {
             try {
+
+                // Inscription au GCM si pas encore fait
+
                 Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
