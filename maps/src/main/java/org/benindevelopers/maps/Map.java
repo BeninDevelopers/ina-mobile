@@ -61,16 +61,16 @@ public class Map extends Activity{
             zone.setZone("Zogbadjè");
             zone.setEtat(true);
             zone.setDescription("Vous avez sûrement le courant");
-            zone.setLat(6.37780);
-            zone.setLon(2.44306);
+            zone.setLat(6.37780f);
+            zone.setLon(2.44306f);
             zones.add(zone);
 
             EtatZone zone1 = new EtatZone();
             zone1.setZone("Zogbadjè");
             zone1.setEtat(false);
-            zone1.setDescription("Vous n'avez pas le courant",);
-            zone1.setLat(6.37780);
-            zone1.setLon(2.44306);
+            zone1.setDescription("Vous n'avez pas le courant");
+            zone1.setLat(6.37780f);
+            zone1.setLon(2.44306f);
             zones.add(zone1);
         }
 
@@ -81,14 +81,14 @@ public class Map extends Activity{
 
         for(EtatZone etatZone:zones)
         {
-            if(etatZone.getEtat == true){
+            if(etatZone.isEtat() == true){
                 icon = getResources().getDrawable(R.drawable.green_marker);
             }
             else{
                 icon = getResources().getDrawable(R.drawable.red_marker);
             }
 
-            OverlayItem current= new OverlayItem(etatZone.getZone, etatZone.getDescription, new GeoPoint(etatZone.getLat, etatZone.getLon));
+            OverlayItem current= new OverlayItem(etatZone.getZone(), etatZone.getDescription(), new GeoPoint(etatZone.getLat(), etatZone.getLon()));
             current.setMarker(icon);
             items.add(current);
 

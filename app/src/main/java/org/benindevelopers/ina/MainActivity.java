@@ -19,5 +19,7 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(batteryReceiver, filter);
         //just for git
+
+        // Intent intent = new
     }
 }
