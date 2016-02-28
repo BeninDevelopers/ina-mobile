@@ -11,3 +11,5 @@ ina-mobile for know availability of light in an area
 
 ###Contributors
 
+See [list of contributors](https://github.com/BeninDevelopers/ina-mobile/graphs/contributors) 
+
