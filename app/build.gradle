@@ -27,5 +27,5 @@ dependencies {
     compile 'com.github.arimorty:floatingsearchview:1.1.2'
     compile 'me.drakeet.materialdialog:library:1.2.2'
     compile project(':power')
-
+    compile project(':maps')
 }
