@@ -18,5 +18,6 @@ public class MainActivity extends AppCompatActivity {
         batteryReceiver = new PowerConnectionReceiver();
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(batteryReceiver, filter);
+        //just for git
     }
 }
