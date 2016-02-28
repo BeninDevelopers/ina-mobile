@@ -22,6 +22,10 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(batteryReceiver, filter);
 
+        //
+        Intent intent=new Intent(this,RegistrationIntentService.class);
+        startService(intent);
+
     }
 
 

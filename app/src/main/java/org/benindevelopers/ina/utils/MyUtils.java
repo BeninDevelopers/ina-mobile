@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
+import android.telephony.TelephonyManager;
 
 import org.benindevelopers.webservices.WebService;
 
@@ -65,5 +66,17 @@ public class MyUtils {
                 .build();
         return retrofit.create(WebService.class);
 
+    }
+
+    /**
+     * Recupere l'identificateur du telephone
+     *
+     * @param appContext
+     * @return l'ID du telephone
+     */
+    public static String getPhoneID(Context appContext) {
+        TelephonyManager tManager = (TelephonyManager) appContext
+                .getSystemService(Context.TELEPHONY_SERVICE);
+        return tManager.getDeviceId();
     }
 }
