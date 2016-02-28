@@ -8,3 +8,6 @@ ina-mobile for know availability of light in an area
 
 ###Features:
 * Find light in an area
+
+###Contributors
+
