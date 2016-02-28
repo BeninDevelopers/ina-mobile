@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">INA</string>
     <string name="action_voice_rec">Rechercher...</string>
+    <string name="gcm_reg_id">200302588878</string>
 </resources>
