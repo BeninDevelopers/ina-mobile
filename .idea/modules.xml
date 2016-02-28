@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/eDelestage.iml" filepath="$PROJECT_DIR$/eDelestage.iml" />
       <module fileurl="file://$PROJECT_DIR$/gcm/gcm.iml" filepath="$PROJECT_DIR$/gcm/gcm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ina-mobile.iml" filepath="$PROJECT_DIR$/ina-mobile.iml" />
       <module fileurl="file://$PROJECT_DIR$/listresult/listresult.iml" filepath="$PROJECT_DIR$/listresult/listresult.iml" />
       <module fileurl="file://$PROJECT_DIR$/maps/maps.iml" filepath="$PROJECT_DIR$/maps/maps.iml" />
       <module fileurl="file://$PROJECT_DIR$/power/power.iml" filepath="$PROJECT_DIR$/power/power.iml" />
