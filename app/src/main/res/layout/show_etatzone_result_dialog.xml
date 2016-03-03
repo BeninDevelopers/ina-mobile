@@ -1,0 +1,22 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/show_etatzone_result_dialog_padding">
+
+    <ImageView
+        android:id="@+id/etatImgV"
+        android:layout_width="@dimen/show_etatzone_result_img_height"
+        android:layout_height="@dimen/show_etatzone_result_img_width"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:id="@+id/descriptionTxtV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/show_etatzone_result_desc_txt_size"
+        android:textStyle="bold"
+        android:layout_below="@id/etatImgV"
+        android:text="@string/hello_blank_fragment" />
+
+</RelativeLayout>

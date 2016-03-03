@@ -21,10 +21,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
+
+import org.benindevelopers.ina.utils.GCMRegisterEvent;
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 
@@ -54,11 +56,11 @@ public class RegistrationIntentService extends IntentService {
             InstanceID instanceID = InstanceID.getInstance(this);
             String token = instanceID.getToken(getString(R.string.gcm_reg_id),GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
-            Toast.makeText(this,token,Toast.LENGTH_LONG).show();
+//            Toast.makeText(this,token,Toast.LENGTH_LONG).show();
             Log.e(TAG, "GCM Registration Token: " + token);
 
             // TODO: Implement this method to send any registration to your app's servers.
-            sendRegistrationToServer(token);
+            registraionSucced(token);
 //            register_id=token;
 
             // Subscribe to topic channels
@@ -73,28 +75,28 @@ public class RegistrationIntentService extends IntentService {
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
+            registrationFailed();
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         //Intent registrationComplete = new Intent(QuickstartPreferences.REGISTRATION_COMPLETE);
         //LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
-    private void sendRegistrationToServer(String gcmId) {
-
+    /**
+     * Méthode appelée une fois l'enregistrement GCM réussie
+     * @param gcmId
+     */
+    private void registraionSucced(String gcmId) {
+        // envoie de l'event pour notifier le succes
+        EventBus.getDefault().post(new GCMRegisterEvent(true, gcmId));
     }
 
     /**
-     * Persist registration to third-party servers.
-     *
-     * Modify this method to associate the user's GCM registration token with any server-side account
-     * maintained by your application.
-     *
-     *
+     * Méthode appelée quand l'enregistrement GCM échoue
      */
-    public static String getRegistrationId() {
-        // Add custom implementation, as needed.
-
-        return register_id;
+    private void registrationFailed(){
+        // envoie de l'event pour notifier l'échec
+        EventBus.getDefault().post(new GCMRegisterEvent(false, null));
     }
 
     /**
@@ -103,6 +105,5 @@ public class RegistrationIntentService extends IntentService {
      * @param token GCM token
      * @throws IOException if unable to reach the GCM PubSub service
      */
-
 
 }

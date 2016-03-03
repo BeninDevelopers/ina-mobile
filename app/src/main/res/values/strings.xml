@@ -3,8 +3,28 @@
     <string name="action_voice_rec">Rechercher...</string>
 
 
+    <string name="gcm_reg_id">200302588878</string>
+    <string name="demande_etat_courant">Avez vous le courant dans votre zone?</string>
+    <string name="oui">OUI</string>
+    <string name="non">NON</string>
+    <string name="loading">Connexion en cours...</string>
+    <string name="erreur_serveur">Une erreur s\'est produite, veuillez réessayer.</string>
+    <string name="reassayer">Réessayer</string>
+
+    <string name="error_coordonnee">Erreur lors de la recupération des coordonées</string>
+    <string name="gpsDisabled">Localisation désactivé</string>
+    <string name="askActivateGPS">Nous avons besoins de vos coordonnées géographique.\nVeuillez activer la localisation pour continuer.</string>
+    <string name="menu_settings">Paramêtres</string>
+
+    <string name="annuler">Annuler</string>
+    <string name="communication_serveur">Communication avec serveur</string>
+    <string name="map_laod_failed">Erreur lors du chargement de la carte.\nVeuillez utiliser la bar de recherche.</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="ask_energie_type">Quel source d\'énergie utiisez-vous actuellement?</string>
+    <string name="sbee">SBEE</string>
+    <string name="sources_alternative">Source alternative</string>
+    <string name="title_activity_power_dialog">PowerDialogActivity</string>
 
-    <string name="gcm_reg_id">200302588878</string>
 </resources>

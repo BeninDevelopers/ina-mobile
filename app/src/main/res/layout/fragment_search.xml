@@ -4,30 +4,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     android:background="#EBEBEB"
     tools:context="org.benindevelopers.ina.fragments.SearchFragment">
 
-    <com.arlib.floatingsearchview.FloatingSearchView
-        android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-        app:floatingSearch_searchHint="Rechercher..."
-        android:id="@+id/search_bar"
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
+    <RelativeLayout
+        android:id="@+id/map_error_LlV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:background="@color/map_error_LlV"
+        android:visibility="gone"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:text="@string/map_laod_failed"/>
+    </RelativeLayout>
+
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:floatingSearch_searchHint="Rechercher..."
         app:floatingSearch_showSearchKey="false"
-        app:floatingSearch_dismissOnOutsideTouch="false"
+        app:floatingSearch_dismissOnOutsideTouch="true"
         app:floatingSearch_leftActionMode="showSearch"
         app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
         app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
         app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
         app:floatingSearch_menu="@menu/search_menu"
-        app:floatingSearch_backgroundColor="#fff"
         app:floatingSearch_hideOverflowMenuWhenFocused="false"
-        >
+        app:floatingSearch_viewTextColor="@color/black"
+        app:floatingSearch_dividerColor="@color/search_divider"
+        />
 
-    </com.arlib.floatingsearchview.FloatingSearchView>
+    <RelativeLayout
+        android:id="@+id/loadingRl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/loadingBackground"
+        android:visibility="gone">
+        <ProgressBar
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            />
+    </RelativeLayout>
 </RelativeLayout>
 

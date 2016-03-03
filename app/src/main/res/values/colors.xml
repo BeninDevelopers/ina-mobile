@@ -3,4 +3,10 @@
     <color name="colorPrimary">#0091EA</color>
     <color name="colorPrimaryDark">#EBEBEB</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="loadingBackground">#bb0091ea</color>
+    <color name="white">#ffffff</color>
+    <color name="dialogPositiveButton">#398bcb</color>
+    <color name="map_error_LlV">#8daaaaaa</color>
+    <color name="search_divider">#e3e3e3</color>
+
 </resources>

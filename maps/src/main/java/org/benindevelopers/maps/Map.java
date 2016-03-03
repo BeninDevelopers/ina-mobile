@@ -6,13 +6,9 @@ package org.benindevelopers.maps;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.location.LocationListener;
 
-import org.benindevelopers.webservices.model.EtatZone;
+import org.benindevelopers.ina.webservice.model.EtatZone;
 import org.osmdroid.DefaultResourceProxyImpl;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -21,13 +17,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.SimpleLocationOverlay;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-
-import java.util.ArrayList;
-
-
-
-
 
 import java.util.ArrayList;
 

@@ -5,9 +5,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import org.benindevelopers.power.PowerConnectionReceiver;
+import org.benindevelopers.ina.fragments.SearchFragment;
+import org.benindevelopers.ina.power.PowerConnectionReceiver;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SearchFragment.OnFragmentInteractionListener{
 
 
     private PowerConnectionReceiver batteryReceiver;
@@ -17,16 +18,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TODO : test of power
-        batteryReceiver = new PowerConnectionReceiver();
-        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        registerReceiver(batteryReceiver, filter);
+        // test of power
+//        batteryReceiver = new PowerConnectionReceiver();
+//        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+//        registerReceiver(batteryReceiver, filter);
 
-        //
-        Intent intent=new Intent(this,RegistrationIntentService.class);
-        startService(intent);
+        // affichage du fragment
+        getSupportFragmentManager().beginTransaction().replace(R.id.content, new SearchFragment()).commit();
 
     }
-
 
 }

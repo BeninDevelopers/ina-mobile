@@ -9,17 +9,18 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 
-import org.benindevelopers.webservices.WebService;
+import org.benindevelopers.ina.webservice.WebService;
 
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 /**
  * Created by Joane SETANGNI on 11/01/2016.
  */
 public class MyUtils {
+    public static final String SHARED_PREF_IS_USER_REGISTERED = "is_user_registered";
     private static MyUtils ourInstance = new MyUtils();
-    public static final String hasUseGadgetPrefName = "gadgetUsed";
     private static final String TAG = "MyUtils";
 
     public static MyUtils getInstance() {
@@ -59,10 +60,19 @@ public class MyUtils {
         }
     }
 
-    public WebService getWebServiceManager(){
+    public WebService getScalarWebServiceManager(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(WebService.BASE_URL)
                 .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+        return retrofit.create(WebService.class);
+
+    }
+
+    public WebService getGsonWebServiceManager(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(WebService.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
         return retrofit.create(WebService.class);
 
