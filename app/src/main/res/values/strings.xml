@@ -12,7 +12,7 @@
     <string name="reassayer">Réessayer</string>
 
     <string name="error_coordonnee">Erreur lors de la recupération des coordonées</string>
-    <string name="gpsDisabled">Localisation désactivé</string>
+    <string name="gpsDisabled">INA - Localisation désactivé</string>
     <string name="askActivateGPS">Nous avons besoins de vos coordonnées géographique.\nVeuillez activer la localisation pour continuer.</string>
     <string name="menu_settings">Paramêtres</string>
 

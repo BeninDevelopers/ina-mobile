@@ -441,12 +441,14 @@ public class SearchFragment extends Fragment {
                     new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                         @Override
                         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
+                            item.setMarkerHotspot(OverlayItem.HotspotPlace.NONE);
                             //affichage de resultDialog
                             showEtatZoneResult(zones.get(index));
                             return true;
                         }
                         @Override
                         public boolean onItemLongPress(final int index, final OverlayItem item) {
+                            item.setMarkerHotspot(OverlayItem.HotspotPlace.NONE);
                             //affichage de resultDialog
                             showEtatZoneResult(zones.get(index));
                             return false;

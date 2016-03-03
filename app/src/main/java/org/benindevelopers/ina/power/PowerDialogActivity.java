@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import org.benindevelopers.ina.R;
@@ -42,7 +41,7 @@ public class PowerDialogActivity extends AppCompatActivity {
         if(isProviderEnabled){
             // si localisation actif
             AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle);
-//        builder.setTitle(R.string.success);
+            builder.setTitle(R.string.app_name);
             builder.setMessage(R.string.ask_energie_type)
                     .setPositiveButton(R.string.sbee, new DialogInterface.OnClickListener() {
                         @Override
@@ -60,7 +59,7 @@ public class PowerDialogActivity extends AppCompatActivity {
                             finish();
                         }
                     })
-                    .setCancelable(false);
+                    .setCancelable(true);
             materialDialog = builder.create();
 
             materialDialog.show();
