@@ -36,7 +36,7 @@ public class Splashscreen extends AppCompatActivity {
     ImageView imgView;
     private String TAG = "Splashscreen";
     private String gcmId ;
-    private int splashDisplayTime = 1000 * 2;
+    private long splashDisplayTime = 1200;
 
 //    private Intent intent;
 
@@ -49,20 +49,14 @@ public class Splashscreen extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        Handler myHandler = new Handler();
-        myHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(MyUtils.getBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_REGISTERED)){
-                    // si user deja enregistré alors continuer
-                    continueAppLoading();
-                }else{
-                    // Inscription au GCM si pas encore fait
-                    registerToGCM();
-                }
+        if(MyUtils.getBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_REGISTERED)){
+            // si user deja enregistré alors continuer
+            continueAppLoading();
+        }else{
+            // Inscription au GCM si pas encore fait
+            registerToGCM();
+        }
 
-            }
-        }, splashDisplayTime);
 
     }
 
@@ -70,9 +64,16 @@ public class Splashscreen extends AppCompatActivity {
      * Méthode pour continuer le chargement de l'app
      */
     private void continueAppLoading() {
-        Intent intent = new Intent(Splashscreen.this, MainActivity.class);
-        finish();
-        startActivity(intent);
+        Handler myHandler = new Handler();
+        myHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(Splashscreen.this, MainActivity.class);
+                finish();
+                startActivity(intent);
+
+            }
+        }, splashDisplayTime);
     }
 
     @Override

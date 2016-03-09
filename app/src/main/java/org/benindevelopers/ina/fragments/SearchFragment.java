@@ -4,14 +4,17 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.text.SpannableString;
+import android.text.TextUtils;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
@@ -63,6 +67,7 @@ import retrofit2.Response;
  */
 public class SearchFragment extends Fragment {
     private static final String TAG = "SearchFragment";
+    private static final int MAP_ZOOM_LEVEL = 16;
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private PowerConnectionReceiver batteryReceiver;
     private Intent intent;
@@ -88,6 +93,7 @@ public class SearchFragment extends Fragment {
     RelativeLayout mapErrorLlv;
     private AlertDialog materialDialog;
     private ProgressDialog loadingDialog;
+    private Toast errorToast;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -146,11 +152,19 @@ public class SearchFragment extends Fragment {
         // initialisation du loading dialog
         loadingDialog = new ProgressDialog(cxt, R.style.AppCompatAlertDialogStyle);
 
+        // customisation du snackbar affiché quand une erreur suivient
+        errorToast = Toast.makeText(cxt, R.string.erreur_serveur, Toast.LENGTH_LONG);
+//        errorToast = Snackbar.make(rootView, R.string.erreur_serveur, Snackbar.LENGTH_LONG);
+//        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) errorToast.getView();
+//        TextView snackBarTextView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+//        snackBarTextView.setTextColor(getResources().getColor(R.color.black));
+//        snackBarView.setBackgroundColor(getResources().getColor(R.color.white));
+
         // affichage du dialog d'activation de la localisation si necessaire
         boolean isProviderEnabled = SmartLocation.with(cxt).location().state().locationServicesEnabled();
         if(isProviderEnabled){
             // si localisation actif
-            showAskPowerDialog  ();
+            showAskPowerDialog();
         }else {
             // sinon demander activation
             showSettingsAlert();
@@ -296,8 +310,8 @@ public class SearchFragment extends Fragment {
                                     materialDialog.dismiss();
                                     hideLoadingDialog();
                                 }else{
-                                    Snackbar.make(rootView, R.string.erreur_serveur, Snackbar.LENGTH_SHORT).show();
                                     materialDialog.show();
+                                    errorToast.show();
                                 }
                                 hideLoadingDialog();
                             }
@@ -305,10 +319,10 @@ public class SearchFragment extends Fragment {
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
                                 Log.d(TAG, "ERREUR: "+t.getMessage());
-                                Snackbar.make(rootView, R.string.erreur_serveur, Snackbar.LENGTH_SHORT).show();
                                 hideLoadingDialog();
                                 // on reaffiche le dialog de questionnement
                                 materialDialog.show();
+                                errorToast.show();
                             }
                         });
 
@@ -366,14 +380,14 @@ public class SearchFragment extends Fragment {
         mapV.setBuiltInZoomControls(true);
         mapV.setMultiTouchControls(true);
         IMapController mapController = mapV.getController();
-        mapController.setZoom(9);
+        mapController.setZoom(MAP_ZOOM_LEVEL);
         GeoPoint startPoint = new GeoPoint(latitude, longitude);
         mapController.setCenter(startPoint);
 
-        Call<List<EtatZone>> getEtatZonesCall = MyUtils.getInstance().getGsonWebServiceManager().getEtatZones(latitude, longitude);
-        getEtatZonesCall.enqueue(new Callback<List<EtatZone>>() {
+        Call<ArrayList<EtatZone>> getEtatZonesCall = MyUtils.getInstance().getGsonWebServiceManager().getEtatZones(latitude, longitude);
+        getEtatZonesCall.enqueue(new Callback<ArrayList<EtatZone>>() {
             @Override
-            public void onResponse(Call<List<EtatZone>> call, Response<List<EtatZone>> response) {
+            public void onResponse(Call<ArrayList<EtatZone>> call, Response<ArrayList<EtatZone>> response) {
                 List<EtatZone> list = response.body();
                 // ajout des points au le map
                 addPoints(list);
@@ -381,7 +395,8 @@ public class SearchFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<EtatZone>> call, Throwable t) {
+            public void onFailure(Call<ArrayList<EtatZone>> call, Throwable t) {
+                Log.d(TAG, "error map: "+t.getMessage());
                 mapErrorLlv.setVisibility(View.VISIBLE);
             }
         });
@@ -441,14 +456,14 @@ public class SearchFragment extends Fragment {
                     new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
                         @Override
                         public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-                            item.setMarkerHotspot(OverlayItem.HotspotPlace.NONE);
+//                            item.setMarkerHotspot(OverlayItem.HotspotPlace.NONE);
                             //affichage de resultDialog
                             showEtatZoneResult(zones.get(index));
                             return true;
                         }
                         @Override
                         public boolean onItemLongPress(final int index, final OverlayItem item) {
-                            item.setMarkerHotspot(OverlayItem.HotspotPlace.NONE);
+//                            item.setMarkerHotspot(OverlayItem.HotspotPlace.NONE);
                             //affichage de resultDialog
                             showEtatZoneResult(zones.get(index));
                             return false;
@@ -490,7 +505,11 @@ public class SearchFragment extends Fragment {
                 etatImgV.setImageResource(R.drawable.ic_not_enought_info);
         }
 
-        descriptionTxtV.setText(etatZone.getDescription());
+        String libelle = etatZone.getLibelle();
+        SpannableString span1 = new SpannableString(libelle);
+        span1.setSpan(new StyleSpan(Typeface.BOLD), 0, libelle.length(), 0);
+
+        descriptionTxtV.setText(TextUtils.concat(etatZone.getDescription()," sur ", span1));
 
         builder.setView(dialogView);
         builder.create().show();

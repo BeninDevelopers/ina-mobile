@@ -4,6 +4,7 @@ package org.benindevelopers.ina.webservice;
 import org.benindevelopers.ina.webservice.model.EtatCourant;
 import org.benindevelopers.ina.webservice.model.EtatZone;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -54,7 +55,7 @@ public interface WebService {
 
     //5-liste des zones électrifiées ou non
     @GET("lightstatus")
-    Call<List<EtatZone>> getEtatZones(
+    Call<ArrayList<EtatZone>> getEtatZones(
             @Query("lat") double lat,
             @Query("lon") double lon
     );

@@ -15,7 +15,6 @@
         android:gravity="center"
         android:textColor="@color/black"
         android:textSize="@dimen/show_etatzone_result_desc_txt_size"
-        android:textStyle="bold"
         android:layout_below="@id/etatImgV"
         android:text="@string/hello_blank_fragment" />
 

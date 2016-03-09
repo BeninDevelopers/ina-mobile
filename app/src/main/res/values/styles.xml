@@ -50,5 +50,10 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="show_result_text_zone_libelle">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/show_etatzone_result_desc_txt_size</item>
+    </style>
+
 
 </resources>
