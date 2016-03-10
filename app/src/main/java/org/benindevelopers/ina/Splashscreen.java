@@ -36,7 +36,7 @@ public class Splashscreen extends AppCompatActivity {
     ImageView imgView;
     private String TAG = "Splashscreen";
     private String gcmId ;
-    private long splashDisplayTime = 1200;
+    private long splashDisplayTime = 1300;
 
 //    private Intent intent;
 
