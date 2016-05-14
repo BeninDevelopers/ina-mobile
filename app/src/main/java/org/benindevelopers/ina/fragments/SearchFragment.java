@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
@@ -17,13 +18,20 @@ import android.text.TextUtils;
 import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewAnimator;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -68,6 +76,8 @@ import retrofit2.Response;
 public class SearchFragment extends Fragment {
     private static final String TAG = "SearchFragment";
     private static final int MAP_ZOOM_LEVEL = 16;
+    public final static int CONTENT_INDEX=0;
+    public final static int LOADER_INDEX=1;
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private PowerConnectionReceiver batteryReceiver;
     private Intent intent;
@@ -75,6 +85,8 @@ public class SearchFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private WebService retrofit;
+    private static final String ABOUT_URL2="https://inadesignteam.slack.com/messages/general/files/F0PC6PW3E/";
+    private static final String ABOUT_URL="https://ina.benindevelopers.org/apropos";
 
     private LocationManager lm;
     private double latitude;
@@ -116,6 +128,19 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        cxt = getContext();
+        // initialisation du loading dialog
+        loadingDialog = new ProgressDialog(cxt, R.style.AppCompatAlertDialogStyle);
+
+        // customisation du snackbar affiché quand une erreur suivient
+        errorToast = Toast.makeText(cxt, R.string.erreur_serveur, Toast.LENGTH_LONG);
+//        errorToast = Snackbar.make(rootView, R.string.erreur_serveur, Snackbar.LENGTH_LONG);
+//        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) errorToast.getView();
+//        TextView snackBarTextView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
+//        snackBarTextView.setTextColor(getResources().getColor(R.color.black));
+//        snackBarView.setBackgroundColor(getResources().getColor(R.color.white));
+
+
     }
 
     @Override
@@ -124,6 +149,16 @@ public class SearchFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, rootView);
         // Inflate the layout for this fragment
+        // affichage du dialog d'activation de la localisation si necessaire
+        boolean isProviderEnabled = SmartLocation.with(cxt).location().state().locationServicesEnabled();
+        if(isProviderEnabled){
+            // si localisation actif
+            showAskPowerDialog();
+        }else {
+            // sinon demander activation
+            showSettingsAlert();
+        }
+        initialiseSearchBar();
         return rootView;
     }
 
@@ -144,41 +179,19 @@ public class SearchFragment extends Fragment {
         mListener = null;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        cxt = getContext();
-        // initialisation du loading dialog
-        loadingDialog = new ProgressDialog(cxt, R.style.AppCompatAlertDialogStyle);
-
-        // customisation du snackbar affiché quand une erreur suivient
-        errorToast = Toast.makeText(cxt, R.string.erreur_serveur, Toast.LENGTH_LONG);
-//        errorToast = Snackbar.make(rootView, R.string.erreur_serveur, Snackbar.LENGTH_LONG);
-//        Snackbar.SnackbarLayout snackBarView = (Snackbar.SnackbarLayout) errorToast.getView();
-//        TextView snackBarTextView = (TextView) snackBarView.findViewById(android.support.design.R.id.snackbar_text);
-//        snackBarTextView.setTextColor(getResources().getColor(R.color.black));
-//        snackBarView.setBackgroundColor(getResources().getColor(R.color.white));
-
-        // affichage du dialog d'activation de la localisation si necessaire
-        boolean isProviderEnabled = SmartLocation.with(cxt).location().state().locationServicesEnabled();
-        if(isProviderEnabled){
-            // si localisation actif
-            showAskPowerDialog();
-        }else {
-            // sinon demander activation
-            showSettingsAlert();
-        }
-
-
-        initialiseSearchBar();
-
-    }
-
     /**
      * Initialise la barre de recherche
      */
     private void initialiseSearchBar(){
+        searchBar.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem item) {
+                if(item.getItemId()==R.id.action_about)
+                {
+                    startAboutDialog();
+                }
+            }
+        });
         searchBar.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
             public void onSearchTextChanged(String oldQuery, String newQuery) {
@@ -238,6 +251,39 @@ public class SearchFragment extends Fragment {
             }
 
         });
+    }
+
+    private void startAboutDialog() {
+        MaterialDialog materialDialog=new MaterialDialog.Builder(getActivity())
+                .title(R.string.action_about)
+                .customView(R.layout.dialog_about, false)
+                .positiveText(R.string.quitter_dialog)
+                .show();
+        initDialogviews(materialDialog.getCustomView());
+
+    }
+
+    private void initDialogviews(View customView) {
+        final WebView webview=(WebView)customView.findViewById(R.id.webview);
+        final ViewAnimator viewAnimator=(ViewAnimator)customView.findViewById(R.id.view_animator);
+        webview.setWebViewClient(new WebViewClient() {
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                viewAnimator.setDisplayedChild(LOADER_INDEX);
+                super.onPageStarted(view, url, favicon);
+            }
+
+            public void onPageFinished(WebView view, String url) {
+                viewAnimator.setDisplayedChild(CONTENT_INDEX);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+
+            }
+        });
+        webview.getSettings().setJavaScriptEnabled(true);
+        webview.loadUrl(ABOUT_URL);
     }
 
     /**
