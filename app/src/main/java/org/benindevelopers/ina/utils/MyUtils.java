@@ -84,9 +84,13 @@ public class MyUtils {
      * @param appContext
      * @return l'ID du telephone
      */
-    public static String getPhoneID(Context appContext) {
+    /*public static String getPhoneID(Context appContext) {
         TelephonyManager tManager = (TelephonyManager) appContext
                 .getSystemService(Context.TELEPHONY_SERVICE);
         return tManager.getDeviceId();
+    }*/
+    public static String getPhoneID(Context appContext) {
+
+        return "";
     }
 }

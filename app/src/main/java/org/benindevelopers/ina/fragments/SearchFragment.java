@@ -1,17 +1,23 @@
 package org.benindevelopers.ina.fragments;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -76,8 +82,9 @@ import retrofit2.Response;
 public class SearchFragment extends Fragment {
     private static final String TAG = "SearchFragment";
     private static final int MAP_ZOOM_LEVEL = 16;
-    public final static int CONTENT_INDEX=0;
-    public final static int LOADER_INDEX=1;
+    public final static int CONTENT_INDEX = 0;
+    public final static int LOADER_INDEX = 1;
+    private static final int PERMISSION_ACCESS_FINE_LOCATION = 001;
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private PowerConnectionReceiver batteryReceiver;
     private Intent intent;
@@ -85,8 +92,8 @@ public class SearchFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private WebService retrofit;
-    private static final String ABOUT_URL2="https://inadesignteam.slack.com/messages/general/files/F0PC6PW3E/";
-    private static final String ABOUT_URL="https://ina.benindevelopers.org/apropos";
+    private static final String ABOUT_URL2 = "https://inadesignteam.slack.com/messages/general/files/F0PC6PW3E/";
+    private static final String ABOUT_URL = "https://ina.benindevelopers.org/apropos";
 
     private LocationManager lm;
     private double latitude;
@@ -148,15 +155,20 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, rootView);
-        // Inflate the layout for this fragment
-        // affichage du dialog d'activation de la localisation si necessaire
-        boolean isProviderEnabled = SmartLocation.with(cxt).location().state().locationServicesEnabled();
-        if(isProviderEnabled){
-            // si localisation actif
-            showAskPowerDialog();
-        }else {
-            // sinon demander activation
-            showSettingsAlert();
+        if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP)
+            checkLocationPermissionIfNeeded();
+        else
+        {
+            // Inflate the layout for this fragment
+            // affichage du dialog d'activation de la localisation si necessaire
+            boolean isProviderEnabled = SmartLocation.with(cxt).location().state().locationServicesEnabled();
+            if(isProviderEnabled){
+                // si localisation actif
+                showAskPowerDialog();
+            }else {
+                // sinon demander activation
+                showSettingsAlert();
+            }
         }
         initialiseSearchBar();
         return rootView;
@@ -182,12 +194,11 @@ public class SearchFragment extends Fragment {
     /**
      * Initialise la barre de recherche
      */
-    private void initialiseSearchBar(){
+    private void initialiseSearchBar() {
         searchBar.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
-                if(item.getItemId()==R.id.action_about)
-                {
+                if (item.getItemId() == R.id.action_about) {
                     startAboutDialog();
                 }
             }
@@ -198,7 +209,7 @@ public class SearchFragment extends Fragment {
                 if (!oldQuery.equals("") && newQuery.equals("")) {
                     searchBar.clearSuggestions();
 
-                } else if(newQuery.length()>2){
+                } else if (newQuery.length() > 2) {
                     // on recupere la liste des EtatZone depuis le serveur
                     Call<List<EtatZone>> call = MyUtils.getInstance().getGsonWebServiceManager().rechercherZone(newQuery);
                     searchBar.showProgress();
@@ -206,11 +217,11 @@ public class SearchFragment extends Fragment {
                         @Override
                         public void onResponse(Call<List<EtatZone>> call, Response<List<EtatZone>> response) {
                             List<EtatZone> list = response.body();
-                            Log.i(TAG, list.size()+" etatZone recu");
-                            for (EtatZone etatZone:list){
-                                Log.i(TAG, etatZone.getId()+ " "+etatZone.getLibelle()+" "+etatZone.getDescription()+" etat "+ (etatZone.isEtat()?1:0)+" type "+etatZone.getEtatDescription());
+                            Log.i(TAG, list.size() + " etatZone recu");
+                            for (EtatZone etatZone : list) {
+                                Log.i(TAG, etatZone.getId() + " " + etatZone.getLibelle() + " " + etatZone.getDescription() + " etat " + (etatZone.isEtat() ? 1 : 0) + " type " + etatZone.getEtatDescription());
                             }
-                            if(list != null && !list.isEmpty()) {
+                            if (list != null && !list.isEmpty()) {
                                 searchBar.swapSuggestions(list);
                             }
                             searchBar.hideProgress();
@@ -232,7 +243,7 @@ public class SearchFragment extends Fragment {
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
 
                 EtatZone etatZone = (EtatZone) searchSuggestion;
-                Log.d(TAG, "zone choisi: "+ etatZone.getLibelle());
+                Log.d(TAG, "zone choisi: " + etatZone.getLibelle());
                 showEtatZoneResult(etatZone);
             }
 
@@ -254,7 +265,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void startAboutDialog() {
-        MaterialDialog materialDialog=new MaterialDialog.Builder(getActivity())
+        MaterialDialog materialDialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_about)
                 .customView(R.layout.dialog_about, false)
                 .positiveText(R.string.quitter_dialog)
@@ -264,8 +275,8 @@ public class SearchFragment extends Fragment {
     }
 
     private void initDialogviews(View customView) {
-        final WebView webview=(WebView)customView.findViewById(R.id.webview);
-        final ViewAnimator viewAnimator=(ViewAnimator)customView.findViewById(R.id.view_animator);
+        final WebView webview = (WebView) customView.findViewById(R.id.webview);
+        final ViewAnimator viewAnimator = (ViewAnimator) customView.findViewById(R.id.view_animator);
         webview.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -289,7 +300,7 @@ public class SearchFragment extends Fragment {
     /**
      * Affiche le dialog de questionnement
      */
-    private void showAskPowerDialog(){
+    private void showAskPowerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(cxt, R.style.AppCompatAlertDialogStyle);
 //        builder.setTitle(R.string.success);
         builder.setMessage(R.string.demande_etat_courant)
@@ -297,8 +308,10 @@ public class SearchFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // envoie
+
                         envoieEtatCourant(true);
                         materialDialog.dismiss();
+
                     }
                 })
                 .setNegativeButton(R.string.non, new DialogInterface.OnClickListener() {
@@ -315,17 +328,28 @@ public class SearchFragment extends Fragment {
 
     }
 
+    private void getLastLocation() {
+        Location lastLocation = SmartLocation.with(getActivity()).location().getLastLocation();
+        if (lastLocation != null) {
+            latitude = lastLocation.getLatitude();
+            longitude = lastLocation.getLongitude();
+        }
+    }
+
     /**
      * Methode permettant d'envoyer l'état du courant au serveur
      * et permettant au user de continuer l'usage de l'app
+     *
      * @param siCourant
      */
-    private void envoieEtatCourant(final boolean siCourant){
+    private void envoieEtatCourant(final boolean siCourant) {
         retrofit = MyUtils.getInstance().getScalarWebServiceManager();
         //on cache le dialog de questionement
-        materialDialog.dismiss();
+        //materialDialog.dismiss();
         // on affiche le sending dialog
         showLoadingSendingDialog();
+        //getLastLocation();
+
         SmartLocation.with(cxt).location()
                 .oneFix()
                 .start(new OnLocationUpdatedListener() {
@@ -349,14 +373,13 @@ public class SearchFragment extends Fragment {
                             @Override
                             public void onResponse(Call<String> call, Response<String> response) {
                                 String rep = response.body();
-                                Log.i(TAG, "Call: "+latitude+" - "+longitude+" "+MyUtils.getPhoneID(cxt));
-                                Log.i(TAG, "REP: "+rep);
-                                if (rep!=null && rep.equals(WebService.REP_OK)){
+                                Log.i(TAG, "Call: " + latitude + " - " + longitude + " " + MyUtils.getPhoneID(cxt));
+                                Log.i(TAG, "REP: " + rep);
+                                if (rep != null && rep.equals(WebService.REP_OK)) {
                                     displayMap();
-                                    materialDialog.dismiss();
-                                    hideLoadingDialog();
-                                }else{
-                                    materialDialog.show();
+                                    //materialDialog.dismiss();
+                                } else {
+                                    //materialDialog.show();
                                     errorToast.show();
                                 }
                                 hideLoadingDialog();
@@ -364,10 +387,10 @@ public class SearchFragment extends Fragment {
 
                             @Override
                             public void onFailure(Call<String> call, Throwable t) {
-                                Log.d(TAG, "ERREUR: "+t.getMessage());
+                                Log.d(TAG, "ERREUR: " + t.getMessage());
                                 hideLoadingDialog();
                                 // on reaffiche le dialog de questionnement
-                                materialDialog.show();
+                                //materialDialog.show();
                                 errorToast.show();
                             }
                         });
@@ -390,15 +413,15 @@ public class SearchFragment extends Fragment {
     /**
      * Cache le ProgressDialog
      */
-    private void hideLoadingDialog(){
+    private void hideLoadingDialog() {
         loadingDialog.dismiss();
     }
 
 
     /**
      * Methode pour afficher un dialog forcant l'utilisateur à activer la localisation
-     * */
-    public void showSettingsAlert(){
+     */
+    public void showSettingsAlert() {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(cxt, R.style.AppCompatAlertDialogStyle);
         AlertDialog alertDialog = dialogBuilder.create();
         // Setting Dialog Title
@@ -407,7 +430,7 @@ public class SearchFragment extends Fragment {
         alertDialog.setMessage(cxt.getText(R.string.askActivateGPS));
         // On pressing Settings button
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, cxt.getText(R.string.menu_settings), new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog,int which) {
+            public void onClick(DialogInterface dialog, int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 cxt.startActivity(intent);
             }
@@ -421,7 +444,7 @@ public class SearchFragment extends Fragment {
     /**
      * Méthode permettant d'initaialiser le Map
      */
-    private void displayMap(){
+    private void displayMap() {
         mapV.setTileSource(TileSourceFactory.MAPNIK);
         mapV.setBuiltInZoomControls(true);
         mapV.setMultiTouchControls(true);
@@ -442,7 +465,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ArrayList<EtatZone>> call, Throwable t) {
-                Log.d(TAG, "error map: "+t.getMessage());
+                Log.d(TAG, "error map: " + t.getMessage());
                 mapErrorLlv.setVisibility(View.VISIBLE);
             }
         });
@@ -451,9 +474,10 @@ public class SearchFragment extends Fragment {
 
     /**
      * Méthode pour afficher les points électrifiés ou non sur la carte
+     *
      * @param zones
      */
-    public void addPoints(final List<EtatZone> zones){
+    public void addPoints(final List<EtatZone> zones) {
 
 //        if(zones==null){
 //            zones= new ArrayList<EtatZone>();
@@ -474,24 +498,23 @@ public class SearchFragment extends Fragment {
 //            zones.add(zone1);
 //        }
 
-        if(zones!=null && !zones.isEmpty()){
-            Log.i(TAG, zones.size()+" Points affichés");
+        if (zones != null && !zones.isEmpty()) {
+            Log.i(TAG, zones.size() + " Points affichés");
 
-            ArrayList<OverlayItem> items=new ArrayList<>();
+            ArrayList<OverlayItem> items = new ArrayList<>();
             Drawable icon;
 
             // nous creons une liste de markers qui seront affichés sur la carte
-            for(EtatZone etatZone:zones){
-                Log.i(TAG, etatZone.getId()+ " "+etatZone.getLibelle()+" "+etatZone.getDescription()+" etat "+ (etatZone.isEtat()?1:0)+" type "+etatZone.getEtatDescription());
-                if(etatZone.isEtat() == true){
+            for (EtatZone etatZone : zones) {
+                Log.i(TAG, etatZone.getId() + " " + etatZone.getLibelle() + " " + etatZone.getDescription() + " etat " + (etatZone.isEtat() ? 1 : 0) + " type " + etatZone.getEtatDescription());
+                if (etatZone.isEtat() == true) {
                     icon = getResources().getDrawable(R.drawable.marker_on);
-                }
-                else{
+                } else {
                     icon = getResources().getDrawable(R.drawable.marker_off);
                 }
 
 //                OverlayItem current= new OverlayItem(etatZone.getLibelle(), etatZone.getDescription(), new GeoPoint(etatZone.getLat(), etatZone.getLon()));
-                OverlayItem current= new OverlayItem("", "", new GeoPoint(etatZone.getLat(), etatZone.getLon()));
+                OverlayItem current = new OverlayItem("", "", new GeoPoint(etatZone.getLat(), etatZone.getLon()));
                 current.setMarker(icon);
                 items.add(current);
 
@@ -507,6 +530,7 @@ public class SearchFragment extends Fragment {
                             showEtatZoneResult(zones.get(index));
                             return true;
                         }
+
                         @Override
                         public boolean onItemLongPress(final int index, final OverlayItem item) {
 //                            item.setMarkerHotspot(OverlayItem.HotspotPlace.NONE);
@@ -523,18 +547,20 @@ public class SearchFragment extends Fragment {
 
     }
 
+
     /**
      * Méthode permettant d'afficher le dialog de résultat correspondant a l'étatZone
+     *
      * @param etatZone
      */
-    private void showEtatZoneResult(EtatZone etatZone){
+    private void showEtatZoneResult(EtatZone etatZone) {
         AlertDialog.Builder builder = new AlertDialog.Builder(cxt, R.style.AppCompatAlertDialogStyle);
         View dialogView = LayoutInflater.from(cxt).inflate(R.layout.show_etatzone_result_dialog, null);
 
         ImageView etatImgV = (ImageView) dialogView.findViewById(R.id.etatImgV);
         TextView descriptionTxtV = (TextView) dialogView.findViewById(R.id.descriptionTxtV);
 
-        switch (etatZone.getEtatDescription()){
+        switch (etatZone.getEtatDescription()) {
             case EtatZone.ETAT_SURREMENT_PAS:
                 etatImgV.setImageResource(R.drawable.ic_surement_pas);
                 break;
@@ -555,12 +581,11 @@ public class SearchFragment extends Fragment {
         SpannableString span1 = new SpannableString(libelle);
         span1.setSpan(new StyleSpan(Typeface.BOLD), 0, libelle.length(), 0);
 
-        descriptionTxtV.setText(TextUtils.concat(etatZone.getDescription()," sur ", span1));
+        descriptionTxtV.setText(TextUtils.concat(etatZone.getDescription(), " sur ", span1));
 
         builder.setView(dialogView);
         builder.create().show();
     }
-
 
 
     /**
@@ -574,6 +599,32 @@ public class SearchFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
+    }
+
+    private void checkLocationPermissionIfNeeded() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_ACCESS_FINE_LOCATION);
+        } else {
+            showAskPowerDialog();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_ACCESS_FINE_LOCATION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    showAskPowerDialog();
+                } else {
+                    //User deny access
+                }
+
+                break;
+        }
     }
 
 }
