@@ -48,14 +48,15 @@ public class Splashscreen extends AppCompatActivity {
         EventBus.getDefault().register(this);
 
         ButterKnife.bind(this);
-
-        if(MyUtils.getBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_REGISTERED)){
+        registerToGCM();
+        /*if(MyUtils.getBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_REGISTERED)){
             // si user deja enregistré alors continuer
             continueAppLoading();
         }else{
             // Inscription au GCM si pas encore fait
             registerToGCM();
-        }
+
+        }*/
 
 
     }

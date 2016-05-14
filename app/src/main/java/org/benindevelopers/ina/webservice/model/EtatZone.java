@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 //import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
@@ -27,6 +29,9 @@ public class EtatZone implements SearchSuggestion {
     private boolean etat;
     private String libelle;
     private String description;
+
+    @SerializedName("etatDesctiption")
+    @Expose
     private int etatDescription;
 //    private int etatDescription = (new Random()).nextInt(4) + 1;
 

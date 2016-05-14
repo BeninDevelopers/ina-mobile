@@ -26,5 +26,7 @@
     <string name="sbee">SBEE</string>
     <string name="sources_alternative">Source alternative</string>
     <string name="title_activity_power_dialog">PowerDialogActivity</string>
+    <string name="action_about">A propos</string>
+    <string name="quitter_dialog">Quitter</string>
 
 </resources>
