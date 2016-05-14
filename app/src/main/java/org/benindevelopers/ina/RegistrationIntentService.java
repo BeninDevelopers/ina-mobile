@@ -98,6 +98,7 @@ public class RegistrationIntentService extends IntentService {
     public void onGCMRegisterResponse(){
         if(gcmId != null){
             Log.i(TAG, "GCM registered");
+            MyUtils.setBooleanSharedPref(cxt, MyUtils.SHARED_PREF_IS_USER_GCM_REGISTERED, true);
         }else{
             /**
              * Désormais on permet à l'utilisateur de continuer le processus si l'enregistrement GCM ne
