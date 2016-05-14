@@ -44,6 +44,7 @@ dependencies {
     compile('com.github.afollestad.material-dialogs:core:0.8.5.8@aar') {
         transitive = true
     }
+    apply plugin: 'com.google.gms.google-services'
+
 }
 
-apply plugin: 'com.google.gms.google-services'
