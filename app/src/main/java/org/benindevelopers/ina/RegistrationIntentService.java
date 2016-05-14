@@ -17,6 +17,7 @@
 package org.benindevelopers.ina;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -25,10 +26,15 @@ import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
-import org.benindevelopers.ina.utils.GCMRegisterEvent;
+import org.benindevelopers.ina.utils.PhoneRegisterEvent;
+import org.benindevelopers.ina.utils.MyUtils;
+import org.benindevelopers.ina.webservice.WebService;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Response;
 
 
 public class RegistrationIntentService extends IntentService {
@@ -36,6 +42,8 @@ public class RegistrationIntentService extends IntentService {
     private static final String TAG = "RegIntentService";
     private static final String[] TOPICS = {"global"};
     private static String register_id="";
+    private Context cxt;
+    private String gcmId = "";
 
     public RegistrationIntentService()
     {
@@ -45,6 +53,7 @@ public class RegistrationIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        cxt = getApplicationContext();
 
         try {
             // [START register_for_gcm]
@@ -54,13 +63,13 @@ public class RegistrationIntentService extends IntentService {
             // See https://developers.google.com/cloud-messaging/android/start for details on this file.
             // [START get_token]
             InstanceID instanceID = InstanceID.getInstance(this);
-            String token = instanceID.getToken(getString(R.string.gcm_reg_id),GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+            gcmId = instanceID.getToken(getString(R.string.gcm_reg_id), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
             // [END get_token]
 //            Toast.makeText(this,token,Toast.LENGTH_LONG).show();
-            Log.e(TAG, "GCM Registration Token: " + token);
+            Log.e(TAG, "GCM Registration Token: " + gcmId);
 
             // TODO: Implement this method to send any registration to your app's servers.
-            registraionSucced(token);
+            onGCMRegisterResponse();
 //            register_id=token;
 
             // Subscribe to topic channels
@@ -75,35 +84,70 @@ public class RegistrationIntentService extends IntentService {
             // If an exception happens while fetching the new token or updating our registration data
             // on a third-party server, this ensures that we'll attempt the update at a later time.
             sharedPreferences.edit().putBoolean(QuickstartPreferences.SENT_TOKEN_TO_SERVER, false).apply();
-            registrationFailed();
+            onGCMRegisterResponse();
         }
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         //Intent registrationComplete = new Intent(QuickstartPreferences.REGISTRATION_COMPLETE);
         //LocalBroadcastManager.getInstance(this).sendBroadcast(registrationComplete);
     }
 
+
     /**
-     * Méthode appelée une fois l'enregistrement GCM réussie
-     * @param gcmId
+     * Méthode gérant les event enclenchés lors de l'enregistrement GCM
      */
-    private void registraionSucced(String gcmId) {
-        // envoie de l'event pour notifier le succes
-        EventBus.getDefault().post(new GCMRegisterEvent(true, gcmId));
+    public void onGCMRegisterResponse(){
+        if(gcmId != null){
+            Log.i(TAG, "GCM registered");
+        }else{
+            /**
+             * Désormais on permet à l'utilisateur de continuer le processus si l'enregistrement GCM ne
+             * marche pas. Ainsi nous pouvons réessayer le registerGCM plus tard
+             */
+            Log.i(TAG, "GCM failed");
+
+//            /**
+//             * Méthode utilisée pour notifier le user de l'échec de l'enregistrement GCM
+//             * et lui permettre de réeassayer
+//             */
+//        Snackbar snackBar = Snackbar.make(imgView, R.string.erreur_serveur, Snackbar.LENGTH_INDEFINITE);
+//        snackBar.setAction(R.string.reassayer, new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                registerUser();
+//            }
+//        });
+//        snackBar.show();
+        }
+        registerUser();
     }
 
     /**
-     * Méthode appelée quand l'enregistrement GCM échoue
+     * Méthode permettant d'enrégistrer le nouvel utilisateur aupres du serveur INA
      */
-    private void registrationFailed(){
-        // envoie de l'event pour notifier l'échec
-        EventBus.getDefault().post(new GCMRegisterEvent(false, null));
-    }
+    private void registerUser(){
+        // Enregistremrent du user
+        Call<String> call = MyUtils.getInstance().getScalarWebServiceManager().enregistrerUtilisateur(
+                MyUtils.getAccountEmail(cxt),
+                MyUtils.getPhoneID(cxt),
+                gcmId
+        );
 
-    /**
-     * Subscribe to any GCM topics of interest, as defined by the TOPICS constant.
-     *
-     * @param token GCM token
-     * @throws IOException if unable to reach the GCM PubSub service
-     */
+        try {
+            Response<String> response = call.execute();
+            String rep = response.body();
+            if (rep!=null && rep.equals(WebService.REP_OK)){
+                // si enrégistrement réussie
+                MyUtils.setBooleanSharedPref(cxt, MyUtils.SHARED_PREF_IS_USER_REGISTERED, true);
+                EventBus.getDefault().post(new PhoneRegisterEvent(true));
+            }else{
+                EventBus.getDefault().post(new PhoneRegisterEvent(false));
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "Erreur "+e.getMessage());
+            EventBus.getDefault().post(new PhoneRegisterEvent(false));
+        }
+    }
 
 }
