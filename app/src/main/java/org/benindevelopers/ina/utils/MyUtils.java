@@ -20,6 +20,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  */
 public class MyUtils {
     public static final String SHARED_PREF_IS_USER_REGISTERED = "is_user_registered";
+    public static final String SHARED_PREF_IS_USER_GCM_REGISTERED = "is_user_gcm_registered";
     private static MyUtils ourInstance = new MyUtils();
     private static final String TAG = "MyUtils";
 

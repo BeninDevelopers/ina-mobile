@@ -1,17 +1,18 @@
 {
   "project_info": {
-    "project_id": "ina-mobile",
-    "project_number": "1029173504840",
-    "name": "ina-mobile"
+    "project_id": "inabenin",
+    "project_number": "200302588878",
+    "name": "InaBenin"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1029173504840:android:ab5fadf859b8d11c",
+        "mobilesdk_app_id": "1:200302588878:android:ab5fadf859b8d11c",
         "client_id": "android:org.benindevelopers.ina",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "org.benindevelopers.ina"
+          "package_name": "org.benindevelopers.ina",
+          "certificate_hash": []
         }
       },
       "oauth_client": [],
@@ -19,6 +20,41 @@
       "services": {
         "analytics_service": {
           "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200302588878:android:84f85b815c952edf",
+        "client_id": "android:org.benindevelopers.gcm",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "org.benindevelopers.gcm",
+          "certificate_hash": []
+        }
+      },
+      "oauth_client": [],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-75091602-1"
+          }
         },
         "cloud_messaging_service": {
           "status": 2,

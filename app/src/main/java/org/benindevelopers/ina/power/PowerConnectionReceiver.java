@@ -44,7 +44,7 @@ public class PowerConnectionReceiver extends BroadcastReceiver {
             @Override
             public void run() {
                 IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-                Intent batteryStatus = cxt.registerReceiver(null, ifilter);
+                Intent batteryStatus = cxt.getApplicationContext().registerReceiver(null, ifilter);
 
                 int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
                 usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
