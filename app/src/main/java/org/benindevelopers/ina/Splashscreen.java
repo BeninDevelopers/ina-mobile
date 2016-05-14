@@ -47,12 +47,12 @@ public class Splashscreen extends AppCompatActivity {
 
         if(MyUtils.getBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_REGISTERED)){
             // si user deja enregistré alors continuer
+            MyUtils.setBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_GCM_REGISTERED, false);
             continueAppLoading();
         }else{
             // Inscription au GCM si pas encore fait
             registerPhone();
         }
-
 
     }
 
@@ -88,7 +88,6 @@ public class Splashscreen extends AppCompatActivity {
          * N'oubliez pas d'enregistrer une méthode pour écouter les evenements
          * (grace à l'anotation @Subscribe EventBus) PhoneRegisterEvent
           */
-
         Intent intent = new Intent(Splashscreen.this, RegistrationIntentService.class);
         startService(intent);
     }
