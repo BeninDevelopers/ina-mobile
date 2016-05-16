@@ -15,7 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -77,6 +77,7 @@ import retrofit2.Response;
  * Created by Joane SETANGNI on 28/02/2016.
  *
  * OSM Map integration code by Ramadan SOUMAILA, SALAMI Abdel-Faiçal , Tiburce, on 28/02/16.
+ * FloatingActionButton code by Seth-Pharès Gnavo (sethgnavo) on 16/05/2016.
  *
  */
 public class SearchFragment extends Fragment {
@@ -110,6 +111,8 @@ public class SearchFragment extends Fragment {
     RelativeLayout loadingBar;
     @Bind(R.id.map_error_LlV)
     RelativeLayout mapErrorLlv;
+    @Bind(R.id.fab_etat_courant_dialog)
+    FloatingActionButton fabShowPowerDialog;
     private AlertDialog materialDialog;
     private ProgressDialog loadingDialog;
     private Toast errorToast;
@@ -171,6 +174,7 @@ public class SearchFragment extends Fragment {
             }
         }
         initialiseSearchBar();
+        setupAskPowerDialog();
         return rootView;
     }
 
@@ -189,6 +193,18 @@ public class SearchFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    /**
+     * Initialise le button de définition de l'état du courant
+     */
+    private void setupAskPowerDialog() {
+        fabShowPowerDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAskPowerDialog();
+            }
+        });
     }
 
     /**
