@@ -14,14 +14,7 @@
             <option value="$PROJECT_DIR$/osmdroid-android-5.1" />
           </set>
         </option>
-        <option name="myModules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/library-3.2.1" />
-            <option value="$PROJECT_DIR$/osmdroid-android-5.1" />
-          </set>
-        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
