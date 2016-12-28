@@ -65,6 +65,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesProvider;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -116,6 +117,7 @@ public class SearchFragment extends Fragment {
     private AlertDialog materialDialog;
     private ProgressDialog loadingDialog;
     private Toast errorToast;
+    private LocationGooglePlayServicesProvider provider;
 
     public SearchFragment() {
         // Required empty public constructor
@@ -158,21 +160,10 @@ public class SearchFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, rootView);
-        if(Build.VERSION.SDK_INT>Build.VERSION_CODES.LOLLIPOP)
-            checkLocationPermissionIfNeeded();
-        else
-        {
-            // Inflate the layout for this fragment
-            // affichage du dialog d'activation de la localisation si necessaire
-            boolean isProviderEnabled = SmartLocation.with(cxt).location().state().locationServicesEnabled();
-            if(isProviderEnabled){
-                // si localisation actif
-                showAskPowerDialog();
-            }else {
-                // sinon demander activation
-                showSettingsAlert();
-            }
-        }
+
+        // demande de l'état du courant
+        showAskPowerDialog();
+
         initialiseSearchBar();
         setupAskPowerDialog();
         return rootView;
@@ -359,6 +350,15 @@ public class SearchFragment extends Fragment {
      * @param siCourant
      */
     private void envoieEtatCourant(final boolean siCourant) {
+
+        // si permission non accordé, alors demander
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    PERMISSION_ACCESS_FINE_LOCATION);
+            return;
+        }
+
         retrofit = MyUtils.getInstance().getScalarWebServiceManager();
         //on cache le dialog de questionement
         //materialDialog.dismiss();
@@ -366,7 +366,10 @@ public class SearchFragment extends Fragment {
         showLoadingSendingDialog();
         //getLastLocation();
 
-        SmartLocation.with(cxt).location()
+        provider = new LocationGooglePlayServicesProvider();
+        provider.setCheckLocationSettings(true);
+
+        SmartLocation.with(cxt).location(provider)
                 .oneFix()
                 .start(new OnLocationUpdatedListener() {
 
@@ -637,6 +640,7 @@ public class SearchFragment extends Fragment {
                     showAskPowerDialog();
                 } else {
                     //User deny access
+                    Toast.makeText(cxt, R.string.fine_location_perm_needed, Toast.LENGTH_LONG).show();
                 }
 
                 break;

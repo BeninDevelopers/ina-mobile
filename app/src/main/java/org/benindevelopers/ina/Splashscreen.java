@@ -31,10 +31,6 @@ public class Splashscreen extends AppCompatActivity {
     @Bind(R.id.imageView)
     ImageView imgView;
     private String TAG = "Splashscreen";
-    private String gcmId ;
-    private long splashDisplayTime = 1300;
-
-//    private Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +44,7 @@ public class Splashscreen extends AppCompatActivity {
         if(MyUtils.getBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_REGISTERED)){
             // si user deja enregistré alors continuer
             MyUtils.setBooleanSharedPref(Splashscreen.this, MyUtils.SHARED_PREF_IS_USER_GCM_REGISTERED, false);
-            continueAppLoading();
+            continueAppLoading(true);
         }else{
             // Inscription au GCM si pas encore fait
             registerPhone();
@@ -59,17 +55,24 @@ public class Splashscreen extends AppCompatActivity {
     /**
      * Méthode pour continuer le chargement de l'app
      */
-    private void continueAppLoading() {
-        Handler myHandler = new Handler();
-        myHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(Splashscreen.this, MainActivity.class);
-                finish();
-                startActivity(intent);
+    private void continueAppLoading(boolean withDelay) {
+        if(withDelay) {
+            Handler myHandler = new Handler();
+            myHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startMainActivity();
+                }
+            }, 1300);
+        }else {
+            startMainActivity();
+        }
+    }
 
-            }
-        }, splashDisplayTime);
+    private void startMainActivity(){
+        Intent intent = new Intent(Splashscreen.this, MainActivity.class);
+        finish();
+        startActivity(intent);
     }
 
     @Override
@@ -101,7 +104,7 @@ public class Splashscreen extends AppCompatActivity {
         if(event.isRegistered()){
             // si enregistrement GCM réussie alors enrégistrement user sur le serveur
             Log.i(TAG, "GCM registered");
-            continueAppLoading();
+            continueAppLoading(false);
         }else{
             // si enregistrement échoue
             Log.i(TAG, "GCM failed");

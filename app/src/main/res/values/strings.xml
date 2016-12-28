@@ -28,5 +28,7 @@
     <string name="title_activity_power_dialog">PowerDialogActivity</string>
     <string name="action_about">A propos</string>
     <string name="quitter_dialog">Quitter</string>
+    <string name="fine_location_perm_needed">Impossible de continuer, Permission non accordée</string>
+    <!--<string name="fine_location_perm_needed">Nous avons besoin de la permission de localisation afin de continuer</string>-->
 
 </resources>
