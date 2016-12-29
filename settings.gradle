@@ -1,1 +1,1 @@
-include ':app', ':gcm', ':webservices', ':power', ':maps', ':listresult'
+include ':app', ':library-3.2.1', ':osmdroid-android-5.1'
